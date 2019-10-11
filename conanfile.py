@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
 import os
 
@@ -21,7 +19,7 @@ class PJSIPConan(ConanFile):
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 
-    requires = "OpenSSL/1.1.1c@conan/stable"
+    requires = "openssl/1.1.1d"
 
     def config_options(self):
         if self.settings.os == 'Windows':
@@ -41,7 +39,7 @@ class PJSIPConan(ConanFile):
 
     def build(self):
         with tools.chdir(self._source_subfolder):
-            args = ["--with-ssl=%s" % self.deps_cpp_info["OpenSSL"].rootpath]
+            args = ["--with-ssl=%s" % self.deps_cpp_info["openssl"].rootpath]
             if self.options.shared:
                 args.extend(["--disable-static", "--enable-shared"])
             else:
