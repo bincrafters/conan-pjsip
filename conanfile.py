@@ -10,7 +10,6 @@ class PJSIPConan(ConanFile):
     topics = ("conan", "pjsip", "sip", "voip", "multimedia", "sdp", "rtp", "stun", "turn", "ice")
     url = "https://github.com/bincrafters/conan-pjsip"
     homepage = "https://www.pjsip.org/"
-    author = "Bincrafters <bincrafters@gmail.com>"
     license = "GPL-2.0-or-later"
     exports = ["LICENSE.md"]
     settings = "os", "arch", "compiler", "build_type"
