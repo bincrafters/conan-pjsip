@@ -37,6 +37,9 @@ class PJSIPConan(ConanFile):
         os.rename("pjproject-" + self.version, self._source_subfolder)
 
     def build(self):
+        tools.replace_in_file(os.path.join(self._source_subfolder, "build.mak.in"),
+                              "export TARGET_NAME := @target@",
+                              "export TARGET_NAME := ")
         with tools.chdir(self._source_subfolder):
             args = ["--with-ssl=%s" % self.deps_cpp_info["openssl"].rootpath]
             if self.options.shared:
@@ -52,9 +55,7 @@ class PJSIPConan(ConanFile):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
 
     def _format_lib(self, lib):
-        suffix = {'Macos': '-x86_64-apple-darwin18.6.0',
-                  'Linux': '-x86_64-unknown-linux-gnu'}.get(str(self.settings.os))
-        return lib + suffix
+        return lib + "-"
 
     def package_info(self):
         libs = ["pjsua2",
