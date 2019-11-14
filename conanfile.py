@@ -1,4 +1,6 @@
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans import ConanFile, AutoToolsBuildEnvironment, MSBuild, tools
+from conans.errors import ConanInvalidConfiguration
+from conans.model.version import Version
 import os
 
 
@@ -24,6 +26,11 @@ class PJSIPConan(ConanFile):
         if self.settings.os == 'Windows':
             del self.options.fPIC
 
+    def configure(self):
+        if self.settings.compiler == "Visual Studio" and self.options.shared:
+            # https://www.pjsip.org/pjlib/docs/html/group__pj__dll__target.htm
+            raise ConanInvalidConfiguration("shared MSVC builds are not supported")
+
     def source(self):
         # Windows users MUST download the .zip because the files have CRLF line-ends,
         # while the .bz2 has LF line-ends and is for Unix and Mac OS X systems
@@ -37,6 +44,26 @@ class PJSIPConan(ConanFile):
         os.rename("pjproject-" + self.version, self._source_subfolder)
 
     def build(self):
+        if self.settings.compiler == "Visual Studio":
+            self._build_msvc()
+        else:
+            self._build_configure()
+
+    def _build_msvc(self):
+        # https://trac.pjsip.org/repos/wiki/Getting-Started/Windows
+        with tools.chdir(self._source_subfolder):
+            version = Version(str(self.settings.compiler.version))
+            sln_file = "pjproject-vs14.sln" if version >= "14.0" else "pjproject-vs8.sln"
+            build_type = "Debug" if self.settings.build_type == "Debug" else "Release"
+            if str(self.settings.compiler.runtime) in ["MT", "MTd"]:
+                build_type += "-Static"
+            else:
+                build_type += "-Dynamic"
+            msbuild = MSBuild(self)
+            msbuild.build(project_file=sln_file, targets=["pjsua"], build_type=build_type,
+                          platforms={"x86": "Win32", "x86_64": "x64"})
+
+    def _build_configure(self):
         tools.replace_in_file(os.path.join(self._source_subfolder, "build.mak.in"),
                               "export TARGET_NAME := @target@",
                               "export TARGET_NAME := ")
