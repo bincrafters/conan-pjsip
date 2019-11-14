@@ -52,6 +52,7 @@ class PJSIPConan(ConanFile):
     def _build_msvc(self):
         # https://trac.pjsip.org/repos/wiki/Getting-Started/Windows
         with tools.chdir(self._source_subfolder):
+            tools.save(os.path.join("pjlib", "include", "pj", "config_site.h"), "")
             version = Version(str(self.settings.compiler.version))
             sln_file = "pjproject-vs14.sln" if version >= "14.0" else "pjproject-vs8.sln"
             build_type = "Debug" if self.settings.build_type == "Debug" else "Release"
