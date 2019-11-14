@@ -2,6 +2,7 @@ from conans import ConanFile, AutoToolsBuildEnvironment, MSBuild, tools
 from conans.errors import ConanInvalidConfiguration
 from conans.model.version import Version
 import os
+import glob
 
 
 class PJSIPConan(ConanFile):
@@ -14,6 +15,7 @@ class PJSIPConan(ConanFile):
     homepage = "https://www.pjsip.org/"
     license = "GPL-2.0-or-later"
     exports = ["LICENSE.md"]
+    exports_sources = ["patches/*.patch"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": False, "fPIC": True}
@@ -50,6 +52,9 @@ class PJSIPConan(ConanFile):
             self._build_configure()
 
     def _build_msvc(self):
+        for filename in sorted(glob.glob("patches/*.patch")):
+            self.output.info('applying patch "%s"' % filename)
+            tools.patch(base_path=self._source_subfolder, patch_file=filename)
         # https://trac.pjsip.org/repos/wiki/Getting-Started/Windows
         with tools.chdir(self._source_subfolder):
             tools.save(os.path.join("pjlib", "include", "pj", "config_site.h"), "")
