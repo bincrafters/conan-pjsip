@@ -46,6 +46,12 @@ class PJSIPConan(ConanFile):
                 args.extend(["--disable-static", "--enable-shared"])
             else:
                 args.extend(["--disable-shared", "--enable-static"])
+            # disable autodetect
+            args.extend(["--disable-darwin-ssl",
+                         "--enable-openssl",
+                         "--disable-opencore-amr",
+                         "--disable-silk",
+                         "--disable-opus"])
             env_build = AutoToolsBuildEnvironment(self)
             env_build.configure(args=args)
             env_build.make()
