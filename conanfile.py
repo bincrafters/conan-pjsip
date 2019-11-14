@@ -81,21 +81,18 @@ class PJSIPConan(ConanFile):
         if self.settings.os == "Linux":
             self.cpp_info.libs.extend(["m", "pthread"])
         elif self.settings.os == "Macos":
-            frameworks = ["CoreAudio",
-                          "CoreServices",
-                          "AudioUnit",
-                          "AudioToolbox",
-                          "Foundation",
-                          "AppKit",
-                          "AVFoundation",
-                          "CoreGraphics",
-                          "QuartzCore",
-                          "CoreVideo",
-                          "CoreMedia",
-                          "VideoToolbox",
-                          "Security"]
-            for framework in frameworks:
-                self.cpp_info.exelinkflags.append("-framework %s" % framework)
-            self.cpp_info.sharedlinkflags = self.cpp_info.exelinkflags
+            self.cpp_info.frameworks = ["CoreAudio",
+                                        "CoreServices",
+                                        "AudioUnit",
+                                        "AudioToolbox",
+                                        "Foundation",
+                                        "AppKit",
+                                        "AVFoundation",
+                                        "CoreGraphics",
+                                        "QuartzCore",
+                                        "CoreVideo",
+                                        "CoreMedia",
+                                        "VideoToolbox",
+                                        "Security"]
         elif self.settings.os == "Windows":
             self.cpp_info.libs.extend(["wsock32", "ws2_32", "ole32", "dsound"])
