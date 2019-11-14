@@ -92,6 +92,19 @@ class PJSIPConan(ConanFile):
 
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
+        if self.settings.compiler == "Visual Studio":
+            self.copy(pattern="*", src=os.path.join(self._source_subfolder, "pjlib", "include"),
+                      dst="include", keep_path=True)
+            self.copy(pattern="*", src=os.path.join(self._source_subfolder, "pjlib-util", "include"),
+                      dst="include", keep_path=True)
+            self.copy(pattern="*", src=os.path.join(self._source_subfolder, "pjnath", "include"),
+                      dst="include", keep_path=True)
+            self.copy(pattern="*", src=os.path.join(self._source_subfolder, "pjmedia", "include"),
+                      dst="include", keep_path=True)
+            self.copy(pattern="*", src=os.path.join(self._source_subfolder, "pjsip", "include"),
+                      dst="include", keep_path=True)
+            self.copy(pattern="*.lib", src=os.path.join(self._source_subfolder),
+                      dst="lib", keep_path=False)
 
     def _format_lib(self, lib):
         return lib + "-"
