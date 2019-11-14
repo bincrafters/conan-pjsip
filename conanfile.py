@@ -55,6 +55,9 @@ class PJSIPConan(ConanFile):
         for filename in sorted(glob.glob("patches/*.patch")):
             self.output.info('applying patch "%s"' % filename)
             tools.patch(base_path=self._source_subfolder, patch_file=filename)
+        tools.replace_in_file(os.path.join(self._source_subfolder, "build", "vs", "pjproject-vs14-common-defaults.props"),
+                              "<OutputFile>..\lib\$(ProjectName)-$(TargetCPU)-$(Platform)-vc$(VSVer)-$(Configuration).lib</OutputFile>",
+                              "<OutputFile>..\lib\$(ProjectName)-.lib</OutputFile>")
         # https://trac.pjsip.org/repos/wiki/Getting-Started/Windows
         with tools.chdir(self._source_subfolder):
             tools.save(os.path.join("pjlib", "include", "pj", "config_site.h"), "")
