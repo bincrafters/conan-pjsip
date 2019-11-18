@@ -3,6 +3,7 @@ from conans.errors import ConanInvalidConfiguration
 from conans.model.version import Version
 import os
 import glob
+import fnmatch
 
 
 class PJSIPConan(ConanFile):
@@ -58,6 +59,17 @@ class PJSIPConan(ConanFile):
         tools.replace_in_file(os.path.join(self._source_subfolder, "build", "vs", "pjproject-vs14-common-defaults.props"),
                               "<OutputFile>..\lib\$(ProjectName)-$(TargetCPU)-$(Platform)-vc$(VSVer)-$(Configuration).lib</OutputFile>",
                               "<OutputFile>..\lib\$(ProjectName)-.lib</OutputFile>")
+        for root, _, filenames in os.walk(self._source_subfolder):
+            for filename in filenames:
+                if fnmatch.fnmatch(filename, "*.vcxproj"):
+                    fullname = os.path.join(root, filename)
+                    print("process", fullname)
+                    tools.replace_in_file(fullname,
+                                          "-$(TargetCPU)-$(Platform)-vc$(VSVer)-$(Configuration).lib</OutputFile>",
+                                          "-.lib</OutputFile>",
+                                          strict=False)
+        #raise Exception("enough")
+
         # https://trac.pjsip.org/repos/wiki/Getting-Started/Windows
         with tools.chdir(self._source_subfolder):
             tools.save(os.path.join("pjlib", "include", "pj", "config_site.h"), "")
@@ -113,26 +125,27 @@ class PJSIPConan(ConanFile):
         return lib + "-"
 
     def package_info(self):
-        libs = ["pjsua2",
-                "pjsua",
+        is_win = self.settings.os == "Windows"
+        libs = ["pjsua2-lib" if is_win else "pjsua2",
+                "pjsua-lib" if is_win else "pjsua",
                 "pjsip-ua",
                 "pjsip-simple",
-                "pjsip",
+                "pjsip-core" if is_win else "pjsip",
                 "pjmedia-codec",
                 "pjmedia",
                 "pjmedia-videodev",
                 "pjmedia-audiodev",
                 "pjnath",
                 "pjlib-util",
-                "srtp",
-                "resample",
-                "gsmcodec",
-                "speex",
-                "ilbccodec",
-                "g7221codec",
-                "yuv",
-                "webrtc",
-                "pj"]
+                "libsrtp" if is_win else "srtp",
+                "libresample" if is_win else "resample",
+                "libgsmcodec" if is_win else "gsmcodec",
+                "libspeex" if is_win else "speex",
+                "libilbccodec" if is_win else "ilbccodec",
+                "libg7221codec" if is_win else "g7221codec",
+                "libyuv" if is_win else "yuv",
+                "libwebrtc" if is_win else "webrtc",
+                "pjlib" if is_win else "pj"]
         self.cpp_info.libs = [self._format_lib(lib) for lib in libs]
         if self.settings.os == "Linux":
             self.cpp_info.libs.extend(["m", "pthread"])
