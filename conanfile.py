@@ -1,6 +1,7 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, MSBuild, tools
 from conans.errors import ConanInvalidConfiguration
-from conans.model.version import Version
+from conans.tools import Version
+from conans.errors import ConanInvalidConfiguration
 import os
 import glob
 import fnmatch
@@ -68,7 +69,7 @@ class PJSIPConan(ConanFile):
                                           "-$(TargetCPU)-$(Platform)-vc$(VSVer)-$(Configuration).lib</OutputFile>",
                                           "-.lib</OutputFile>",
                                           strict=False)
-        #raise Exception("enough")
+        #raise ConanInvalidConfiguration("enough")
 
         # https://trac.pjsip.org/repos/wiki/Getting-Started/Windows
         with tools.chdir(self._source_subfolder):
