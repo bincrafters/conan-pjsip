@@ -16,7 +16,6 @@ class PJSIPConan(ConanFile):
     url = "https://github.com/bincrafters/conan-pjsip"
     homepage = "https://www.pjsip.org/"
     license = "GPL-2.0-or-later"
-    exports = ["LICENSE.md"]
     exports_sources = ["patches/*.patch"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
@@ -24,7 +23,7 @@ class PJSIPConan(ConanFile):
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 
-    requires = "openssl/1.1.1d"
+    requires = "openssl/1.1.1f"
 
     def config_options(self):
         if self.settings.os == 'Windows':
