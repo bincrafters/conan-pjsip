@@ -23,7 +23,7 @@ class PJSIPConan(ConanFile):
     _source_subfolder = "source_subfolder"
     _build_subfolder = "build_subfolder"
 
-    requires = "openssl/1.1.1g"
+    requires = "openssl/1.1.1h"
 
     def config_options(self):
         if self.settings.os == 'Windows':
